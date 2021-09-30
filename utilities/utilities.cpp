@@ -90,4 +90,78 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
 	return KP::SUCCESS;
 }
 
+/***
+ * Iterates over all students in vector, and averages midterm1 and midterm2 to get the finalgrade
+ * @param allstudentData
+ * @return VECTOR_CONTAINS_NO_STUDENTS
+ *         SUCCESS
+ */
+int calculateFinalGrade(std::vector<KP::studentData> &allstudentData){
+	if (allstudentData.size()==0){
+		return KP::VECTOR_CONTAINS_NO_STUDENTS;
+	}
+
+	for (unsigned long long int i=0; i < allstudentData.size(); i++){
+		allstudentData[i].finalgrade = (allstudentData[i].midterm1 + allstudentData[i].midterm2)/2;
+	}
+
+	return KP::SUCCESS;
+}
+
+/***
+ * Opens file, serializes data from allstudentData to file, closes file
+ * the default param seperator_char is defined in the header file ONLY
+ * @param file - where student data is stored
+ * @param allstudentData - a vector that holds student data info that will be written to file
+ * @param separator_char - the character that separates each bit of data in a line of student data
+ * @return VECTOR_CONTAINS_NO_STUDENTS
+ *         COULD_NOT_OPEN_FILE
+ *         SUCCESS
+ */
+int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, char separator_char) {
+	separator_char=KP::SEPERATOR_CHAR;
+
+	ofstream myOutputFile;
+	//checks for an empty student data vector
+	if (allstudentData.size()==0){
+		return KP::VECTOR_CONTAINS_NO_STUDENTS;
+	}
+
+	//opens the file to write to
+	myOutputFile.open(file.c_str());
+
+	//checks if file cannot open
+	if (!myOutputFile.is_open()){
+		return KP::COULD_NOT_OPEN_FILE;
+	}
+	//iterate through allStudentData and write to file (name, mid1, mid2, finalgrade)
+	for (unsigned long long int i=0; i < allstudentData.size(); i++){
+		myOutputFile << allstudentData[i].name;
+		myOutputFile << allstudentData[i].midterm1;
+		myOutputFile << allstudentData[i].midterm2;
+		myOutputFile << allstudentData[i].finalgrade;
+		myOutputFile << "\n";
+	}
+	return KP::SUCCESS;
+}
+
+//sorts studentdata based on SORT_TYPE
+/***
+ *
+ * @param allstudentData - a vector that holds student data info that will be written to file
+ * @param st - how to sort the vector
+ * @return VECTOR_CONTAINS_NO_STUDENTS
+ *         SUCCESS
+ */
+int sortStudentData(std::vector<KP::studentData> &allstudentData,KP::SORT_TYPE st){
+
+	//checks for an empty student data vector
+	if (allstudentData.size()==0){
+		return KP::VECTOR_CONTAINS_NO_STUDENTS;
+	}
+
+
+
+	return KP::SUCCESS;
+}
 
