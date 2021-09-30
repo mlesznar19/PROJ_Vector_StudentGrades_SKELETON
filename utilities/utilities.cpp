@@ -145,6 +145,14 @@ int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, c
 	return KP::SUCCESS;
 }
 
+bool compareFinal(const KP::studentData& x, KP::studentData& y){
+	return x.finalgrade < y.finalgrade;
+}
+
+bool compareName(const KP::studentData& x, KP::studentData& y){
+	return x.name < y.name;
+}
+
 //sorts studentdata based on SORT_TYPE
 /***
  *
@@ -155,11 +163,21 @@ int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, c
  */
 int sortStudentData(std::vector<KP::studentData> &allstudentData,KP::SORT_TYPE st){
 
+	KP::SORT_TYPE name = KP::NAME;
+	KP::SORT_TYPE finalgrade = KP::FINAL_GRADE;
+
 	//checks for an empty student data vector
 	if (allstudentData.size()==0){
 		return KP::VECTOR_CONTAINS_NO_STUDENTS;
 	}
 
+	if (st == name){
+		sort(allstudentData.begin(), allstudentData.end(), compareName);
+	}
+
+	if (st == finalgrade){
+			sort(allstudentData.begin(), allstudentData.end(), compareFinal);
+		}
 
 
 	return KP::SUCCESS;
