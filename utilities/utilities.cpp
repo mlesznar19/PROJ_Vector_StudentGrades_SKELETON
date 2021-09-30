@@ -51,8 +51,7 @@ double stringToDouble(const char *myString) {
  */
 int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, char separator_char) {
 
-
-	separator_char = KP::SEPERATOR_CHAR;
+	//separator_char = KP::SEPERATOR_CHAR;
 	//clear the vector
 	allstudentData.clear();
 
@@ -63,22 +62,25 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
 	ifstream myInputFile;
 
 	//opens the file
-	myInputFile.open(file.c_str(), ios::in);
+	myInputFile.open(file, ios::in);
 
 	while (!myInputFile.eof()){
 
 		//get a line from the file (name, midterm1, midterm2, possibly final grade
 		getline(myInputFile, line);
 		ss.str(line);
+		cout << line << '\n';
 
 		myStudentData.clear();
 
 		//get the name
-		getline(ss, myStudentData.name, KP::SEPERATOR_CHAR);
+		getline(ss, myStudentData.name, separator_char);
+		//cout << "getname"<<endl;
 
 		//get midterm1
 		getline(ss, token, KP::SEPERATOR_CHAR);
 		myStudentData.midterm1 = stringToInt(token.c_str());
+		//cout << "getmid1"<<endl;
 
 		//get midterm2
 		getline(ss, token, KP::SEPERATOR_CHAR);
@@ -87,6 +89,8 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
 		//add the student data to vector
 		allstudentData.push_back(myStudentData);
 	}
+	myInputFile.close();
+
 	return KP::SUCCESS;
 }
 
@@ -128,7 +132,7 @@ int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, c
 	}
 
 	//opens the file to write to
-	myOutputFile.open(file.c_str());
+	myOutputFile.open(file);
 
 	//checks if file cannot open
 	if (!myOutputFile.is_open()){
@@ -137,11 +141,18 @@ int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, c
 	//iterate through allStudentData and write to file (name, mid1, mid2, finalgrade)
 	for (unsigned long long int i=0; i < allstudentData.size(); i++){
 		myOutputFile << allstudentData[i].name;
+		myOutputFile << " ";
 		myOutputFile << allstudentData[i].midterm1;
+		myOutputFile << " ";
 		myOutputFile << allstudentData[i].midterm2;
+		myOutputFile << " ";
 		myOutputFile << allstudentData[i].finalgrade;
 		myOutputFile << "\n";
+		//cout << allstudentData[0].midterm1;
+
 	}
+
+	myOutputFile.close();
 	return KP::SUCCESS;
 }
 
@@ -177,7 +188,7 @@ int sortStudentData(std::vector<KP::studentData> &allstudentData,KP::SORT_TYPE s
 
 	if (st == finalgrade){
 			sort(allstudentData.begin(), allstudentData.end(), compareFinal);
-		}
+	}
 
 
 	return KP::SUCCESS;
