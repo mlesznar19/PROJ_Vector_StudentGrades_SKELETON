@@ -51,6 +51,8 @@ double stringToDouble(const char *myString) {
  */
 int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, char separator_char) {
 
+
+
 	//separator_char = KP::SEPERATOR_CHAR;
 	//clear the vector
 	allstudentData.clear();
@@ -62,32 +64,30 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
 	ifstream myInputFile;
 
 	//opens the file
-	myInputFile.open(file, ios::in);
+	myInputFile.open(file.c_str(), ios::in);
 
-	while (!myInputFile.eof()){
+	//checks if file cannot open
+	if (!myInputFile.is_open()){
+		return KP::COULD_NOT_OPEN_FILE;
+	}
 
-		//get a line from the file (name, midterm1, midterm2, possibly final grade
-		getline(myInputFile, line);
-		ss.str(line);
-		cout << line << '\n';
 
+	while (std::getline(myInputFile, line)){
+		std::string name;
+		std::string g1;
+		std::string g2;
+		std::stringstream ss(line);
 		myStudentData.clear();
 
-		//get the name
-		getline(ss, myStudentData.name, separator_char);
-		//cout << "getname"<<endl;
+		getline(ss, name, separator_char);
+		getline(ss, g1, separator_char);
+		getline(ss, g2, separator_char);
 
-		//get midterm1
-		getline(ss, token, KP::SEPERATOR_CHAR);
-		myStudentData.midterm1 = stringToInt(token.c_str());
-		//cout << "getmid1"<<endl;
-
-		//get midterm2
-		getline(ss, token, KP::SEPERATOR_CHAR);
-		myStudentData.midterm2 = stringToInt(token.c_str());
-
-		//add the student data to vector
+		myStudentData.name = name;
+		myStudentData.midterm1 = stringToInt(g1.c_str());
+		myStudentData.midterm2 = stringToInt(g2.c_str());
 		allstudentData.push_back(myStudentData);
+
 	}
 	myInputFile.close();
 
@@ -101,15 +101,15 @@ int readFile(std::string &file, std::vector<KP::studentData> &allstudentData, ch
  *         SUCCESS
  */
 int calculateFinalGrade(std::vector<KP::studentData> &allstudentData){
-	if (allstudentData.size()==0){
-		return KP::VECTOR_CONTAINS_NO_STUDENTS;
+	if (allstudentData.size() > 1){
+		for (int i=0; i < allstudentData.size(); i++){
+			allstudentData[i].finalgrade = (allstudentData[i].midterm1 + allstudentData[i].midterm2)/2;
+		}
+		return KP::SUCCESS;
 	}
 
-	for (unsigned long long int i=0; i < allstudentData.size(); i++){
-		allstudentData[i].finalgrade = (allstudentData[i].midterm1 + allstudentData[i].midterm2)/2;
-	}
+	return KP::VECTOR_CONTAINS_NO_STUDENTS;
 
-	return KP::SUCCESS;
 }
 
 /***
@@ -125,11 +125,12 @@ int calculateFinalGrade(std::vector<KP::studentData> &allstudentData){
 int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, char separator_char) {
 	separator_char=KP::SEPERATOR_CHAR;
 
-	ofstream myOutputFile;
 	//checks for an empty student data vector
-	if (allstudentData.size()==0){
-		return KP::VECTOR_CONTAINS_NO_STUDENTS;
+	if (allstudentData.size() < 2){
+		return KP::VECTOR_CONTAINS_NO_STUDENTS;;
 	}
+
+	ofstream myOutputFile;
 
 	//opens the file to write to
 	myOutputFile.open(file);
@@ -147,7 +148,11 @@ int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, c
 		myOutputFile << allstudentData[i].midterm2;
 		myOutputFile << " ";
 		myOutputFile << allstudentData[i].finalgrade;
-		myOutputFile << "\n";
+		if (!(i == (allstudentData.size() - 1))){
+			myOutputFile << "\n";
+		}
+
+
 		//cout << allstudentData[0].midterm1;
 
 	}
@@ -157,7 +162,7 @@ int writeFile(std::string &file, std::vector<KP::studentData> &allstudentData, c
 }
 
 bool compareFinal(const KP::studentData& x, KP::studentData& y){
-	return x.finalgrade < y.finalgrade;
+	return x.finalgrade > y.finalgrade;
 }
 
 bool compareName(const KP::studentData& x, KP::studentData& y){
@@ -178,8 +183,8 @@ int sortStudentData(std::vector<KP::studentData> &allstudentData,KP::SORT_TYPE s
 	KP::SORT_TYPE finalgrade = KP::FINAL_GRADE;
 
 	//checks for an empty student data vector
-	if (allstudentData.size()==0){
-		return KP::VECTOR_CONTAINS_NO_STUDENTS;
+	if (allstudentData.size() < 2){
+		return KP::VECTOR_CONTAINS_NO_STUDENTS;;
 	}
 
 	if (st == name){
@@ -187,7 +192,7 @@ int sortStudentData(std::vector<KP::studentData> &allstudentData,KP::SORT_TYPE s
 	}
 
 	if (st == finalgrade){
-			sort(allstudentData.begin(), allstudentData.end(), compareFinal);
+		sort(allstudentData.begin(), allstudentData.end(), compareFinal);
 	}
 
 
